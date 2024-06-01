@@ -44,22 +44,6 @@ if delay_min > delay_max:
 session = requests_html.HTMLSession()
 ### END STARTUP ###
 
-if args.test:
-    if args.test[0] not in config:
-        print(f"Entry \"{args.test[0]}\" not found in config file", file=sys.stderr)
-        sys.exit(1)
-    entry = config[args.test[0]]
-    response = session.get(entry['url'])
-    response.html.render()
-    for key in entry:
-        if key == 'url' or entry[key] is None:
-            continue
-        if response.html.xpath(entry[key]):
-            print(f"{key}: {response.html.xpath(entry[key])}")
-        else:
-            print(f"{key}: <Not Found>")
-    sys.exit(0)
-
 for entry in config.keys():
     _flag = True      # Keep operating while this is set. If we have a failure, unset to jump to next entry
     next_page = None  # Placeholder for next page URL
