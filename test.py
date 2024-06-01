@@ -33,6 +33,9 @@ else:
 response = session.get(url)
 response.html.render()
 for key in ('next_page', 'title', 'image', 'text'):
+    if entry[key] is None:
+        print(f"{key}: <Not Specified>")
+        continue
     if response.html.xpath(entry[key]):
         print(f"{key}: {response.html.xpath(entry[key])}")
     else:
