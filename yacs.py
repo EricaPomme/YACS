@@ -134,6 +134,9 @@ for entry in config.keys():
                 with open(filepath, 'wb') as f:
                     f.write(image_res.content)
                     print(f"[{time.strftime('%Y/%m/%d %H:%M:%S')}] {entry}: Saved {filepath} ({len(image_res.content) / 1024:.1f} KiB)")
+                    # Note that url was saved, update config file with status
+                    config[entry]['saved_urls'].append(url)
+                    yaml.dump(config, open('config.yaml', 'w'), Dumper=Dumper)
                     if next_page is None:
                         _flag = False
                         print(f"[{time.strftime('%Y/%m/%d %H:%M:%S')}] {entry}: No next page found at {url}", file=sys.stderr)
@@ -144,11 +147,7 @@ for entry in config.keys():
                 print(f"[{time.strftime('%Y/%m/%d %H:%M:%S')}] {entry}: Error saving image at {url}", file=sys.stderr)
                 print(e, file=sys.stderr)
                 sys.exit(1)
-
-        # Note that url was saved, update config file with status
-        config[entry]['saved_urls'].append(url)
-        yaml.dump(config, open('config.yaml', 'w'), Dumper=Dumper)
-        
+                
         if delay_min and delay_max:
             delay = random.uniform(delay_min, delay_max)
             print(f"[{time.strftime('%Y/%m/%d %H:%M:%S')}] {entry}: Delaying {delay:.2f} seconds")
