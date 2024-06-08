@@ -11,20 +11,22 @@ import os
 import sys
 import requests_html
 
+## Example config.yaml
+# ExampleEntry:
+entry_template = {
+    "ExampleEntry": {           # Name of entry
+        "url": None,            # URL to begin scraping at
+        "next_page": None,      # XPath to next page button
+        "title": None,          # XPath to title
+        "image": None,          # XPath to image
+        "text": None,           # XPath to descriptive text/author commentary
+        "saved_urls": [],       # URLs that have already been saved
+        "skip": []              # URLs to skip
+        }
+    }
 ### BEGIN STARTUP ###
 if not os.path.exists('config.yaml'):
-    example = {
-        "ExampleEntry": {           # Name of entry
-            "url": None,            # URL to begin scraping at
-            "next_page": None,      # XPath to next page button
-            "title": None,          # XPath to title
-            "image": None,          # XPath to image
-            "text": None,           # XPath to descriptive text/author commentary
-            "saved_urls": [],       # URLs that have already been saved
-            "skip": []              # URLs to skip
-            }
-        }
-    yaml.dump(example, open('config.yaml', 'w'), Dumper=Dumper)
+    yaml.dump(entry_template, open('config.yaml', 'w'), Dumper=Dumper)
     print("Config file not found. Sample config created.", file=sys.stderr)
     sys.exit(1)
 
@@ -34,12 +36,19 @@ args = argparse.ArgumentParser()
 args.add_argument('--delay-min', type=float, nargs=1, default=0, help='Minimum delay between requests')
 args.add_argument('--delay-max', type=float, nargs=1, default=0, help='Maximum delay between requests')
 args.add_argument('--output', nargs=1, default='output', help='Output directory')
+args.add_argument('--add-blank', action='store_true', help='Add new entry template to config file')
 args = args.parse_args()
 
 delay_min = max(0.0, args.delay_min[0] if isinstance(args.delay_min, list) else args.delay_min)
 delay_max = max(0.0, args.delay_max[0] if isinstance(args.delay_max, list) else args.delay_max)
 if delay_min > delay_max:
     delay_min = delay_max
+
+if args.add_blank:
+    config.update(entry_template)
+    yaml.dump(config, open('config.yaml', 'w'), Dumper=Dumper)
+    print("Blank entry added to config file.")
+    sys.exit(0)
 
 session = requests_html.HTMLSession()
 ### END STARTUP ###
